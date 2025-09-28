@@ -2,12 +2,18 @@
   "openapi": "3.0.0",
   "info": {
     "title": "URL Shortener API",
-    "version": "1.0.0"
+    "version": "2.0.0"
   },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api-v2",
+      "description": "API v2"
+    }
+  ],
   "paths": {
-    "/api-v1/": {
+    "/": {
       "get": {
-        "summary": "Get total number of links",
+        "summary": "Get total number of links (JSON) or home page (HTML)",
         "responses": {
           "200": {
             "description": "Successful response",
@@ -21,13 +27,22 @@
                     }
                   }
                 }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "description": "Home page HTML"
+                }
               }
             }
+          },
+          "406": {
+            "description": "Not Acceptable"
           }
         }
       },
       "post": {
-        "summary": "Create a short URL",
+        "summary": "Create a short URL (JSON) or show created page (HTML)",
         "requestBody": {
           "required": true,
           "content": {
@@ -56,28 +71,27 @@
                     }
                   }
                 }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "description": "Created page HTML"
+                }
               }
             }
           },
           "400": {
             "description": "Invalid URL"
+          },
+          "406": {
+            "description": "Not Acceptable"
           }
         }
       }
     },
-    "/api-v1/error": {
+    "/{url}": {
       "get": {
-        "summary": "Test error endpoint",
-        "responses": {
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/api-v1/{url}": {
-      "get": {
-        "summary": "Redirect to original URL (Not implemented)",
+        "summary": "Get link info (JSON) or redirect (HTML)",
         "parameters": [
           {
             "name": "url",
@@ -89,28 +103,35 @@
           }
         ],
         "responses": {
-          "501": {
-            "description": "Not implemented"
-          }
-        }
-      }
-    },
-    "/api-v1/status/{url}": {
-      "get": {
-        "summary": "Get URL status (Not implemented)",
-        "parameters": [
-          {
-            "name": "url",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+          "200": {
+            "description": "Link info (JSON)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "origin": {
+                      "type": "string"
+                    },
+                    "visits": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
             }
-          }
-        ],
-        "responses": {
-          "501": {
-            "description": "Not implemented"
+          },
+          "302": {
+            "description": "Redirect to original URL (HTML)"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "406": {
+            "description": "Not Acceptable"
           }
         }
       }
