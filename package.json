@@ -1,7 +1,7 @@
 {
   "name": "tp6-devweb-maviet-cedric",
   "version": "1.0.0",
-  "description": "",
+  "description": "URL Shortener API built with Node.js and Express",
   "homepage": "https://github.com/otomutachi/TP6-devweb-Maviet-Cedric#readme",
   "bugs": {
     "url": "https://github.com/otomutachi/TP6-devweb-Maviet-Cedric/issues"
@@ -11,23 +11,25 @@
     "url": "git+https://github.com/otomutachi/TP6-devweb-Maviet-Cedric.git"
   },
   "license": "ISC",
-  "author": "",
+  "author": "Cedric Maviet",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js",
-    "prod": "node src/server.js"
+    "prod": "node src/server.js",
+    "format": "prettier --write \"**/*.{js,mjs}\""
   },
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "sqlite3": "^5.1.6",
     "swagger-ui-express": "^5.0.0",
-    "yamljs": "^0.3.0",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
   }
 }

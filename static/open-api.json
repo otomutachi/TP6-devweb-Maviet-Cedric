@@ -1,0 +1,119 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "URL Shortener API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api-v1/": {
+      "get": {
+        "summary": "Get total number of links",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a short URL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "URL created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "short_url": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid URL"
+          }
+        }
+      }
+    },
+    "/api-v1/error": {
+      "get": {
+        "summary": "Test error endpoint",
+        "responses": {
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api-v1/{url}": {
+      "get": {
+        "summary": "Redirect to original URL (Not implemented)",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "501": {
+            "description": "Not implemented"
+          }
+        }
+      }
+    },
+    "/api-v1/status/{url}": {
+      "get": {
+        "summary": "Get URL status (Not implemented)",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "501": {
+            "description": "Not implemented"
+          }
+        }
+      }
+    }
+  }
+}
