@@ -4,7 +4,7 @@ const db = require('../utils/database');
 const { isValidUrl, generateShortUrl, generateSecret } = require('../utils/url');
 const config = require('../utils/config');
 
-const SHORT_URL_BASE = `http://localhost:8081`;
+const SHORT_URL_BASE = `http://localhost:8080`;
 
 async function generateUniqueShortUrl(length) {
   let attempts = 0;
@@ -21,7 +21,13 @@ async function generateUniqueShortUrl(length) {
 }
 
 async function createShortUrl(originalUrl) {
-  if (!originalUrl || !isValidUrl(originalUrl)) {
+  if (!originalUrl) {
+    throw new Error('Invalid URL');
+  }
+  let finalUrl = originalUrl;
+  if (originalUrl.startsWith('/')) {
+    finalUrl = `${SHORT_URL_BASE}${originalUrl}`;
+  } else if (!isValidUrl(originalUrl)) {
     throw new Error('Invalid URL');
   }
   const shortUrl = await generateUniqueShortUrl(config.LINK_LEN);
@@ -29,7 +35,7 @@ async function createShortUrl(originalUrl) {
   const secret = generateSecret();
   await db.run(
     'INSERT INTO links (short, origin, created_at, secret) VALUES (?, ?, ?, ?)',
-    [shortUrl, originalUrl, createdAt, secret]
+    [shortUrl, finalUrl, createdAt, secret]
   );
   return `${SHORT_URL_BASE}/${shortUrl}`;
 }
@@ -147,39 +153,6 @@ router.delete('/:url', async (req, res) => {
 
 module.exports = router;
 
-router.get('/:url', (req, res) => {
-  res.format({
-    'application/json': async () => {
-      try {
-        const row = await db.get('SELECT created_at, origin, visits FROM links WHERE short = ?', [req.params.url]);
-        if (!row) {
-          return res.status(404).json({ error: 'Not found' });
-        }
-        const { secret, ...safeRow } = row; 
-        res.json(safeRow);
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server error' });
-      }
-    },
-    'text/html': async () => {
-      try {
-        const row = await db.get('SELECT origin, visits FROM links WHERE short = ?', [req.params.url]);
-        if (!row) {
-          return res.status(404).send('Not found');
-        }
-        await db.run('UPDATE links SET visits = ? WHERE short = ?', [row.visits + 1, req.params.url]);
-        res.redirect(row.origin);
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal server error');
-      }
-    },
-    default: () => {
-      res.status(406).send('Not Acceptable');
-    }
-  });
-});
 
 router.delete('/:url', async (req, res) => {
   const apiKey = req.get('X-API-Key');
