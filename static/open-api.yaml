@@ -14,7 +14,22 @@ components:
 security:
   - apiKey: []
 paths:
-  /:
+  /{url}:
+    delete:
+      summary: Delete a shortened URL
+      parameters:
+        - name: url
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - apiKey: []
+      responses:
+        '200': { description: Link successfully deleted }
+        '401': { description: Unauthorized (missing X-API-Key) }
+        '403': { description: Forbidden (invalid X-API-Key) }
+        '404': { description: Not found }
     get:
       summary: Get total number of links (JSON) or home page (HTML)
       responses:
