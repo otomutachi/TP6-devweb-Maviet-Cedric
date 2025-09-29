@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener API
+  version: 2.0.1
+servers:
+  - url: http://localhost:8080/api-v2
+    description: API v2
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+  - apiKey: []
+paths:
+  /:
+    get:
+      summary: Get total number of links (JSON) or home page (HTML)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+            text/html:
+              schema:
+                type: string
+                description: Home page HTML
+        '406':
+          description: Not Acceptable
+    post:
+      summary: Create a short URL (JSON) or show created page (HTML)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+      responses:
+        '201':
+          description: URL created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  short_url:
+                    type: string
+            text/html:
+              schema:
+                type: string
+                description: Created page HTML
+        '400':
+          description: Invalid URL
+        '406':
+          description: Not Acceptable
+  /{url}:
+    get:
+      summary: Get link info (JSON) or redirect (HTML)
+      parameters:
+        - name: url
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Link info (JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created_at:
+                    type: string
+                  origin:
+                    type: string
+                  visits:
+                    type: integer
+        '302':
+          description: Redirect to original URL (HTML)
+        '404':
+          description: Not found
+        '406':
+          description: Not Acceptable
+    delete:
+      summary: Delete a shortened URL
+      parameters:
+        - name: url
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: Link successfully deleted
+        '401':
+          description: Unauthorized (missing X-API-Key)
+        '403':
+          description: Forbidden (invalid X-API-Key)
+        '404':
+          description: Not found
