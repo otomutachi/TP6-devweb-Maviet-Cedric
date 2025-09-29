@@ -16,6 +16,26 @@
     <h1>Shortened URL Created</h1>
     <p>Your shortened URL: <a href="<%= shortUrl %>"><%= shortUrl %></a></p>
     <button onclick="navigator.clipboard.writeText('<%= shortUrl %>').then(() => alert('URL copied to clipboard!'))">Copy URL</button>
+    <% if (typeof secret !== 'undefined') { %>
+      <button id="deleteBtn">Supprimer ce lien</button>
+      <script>
+        document.getElementById('deleteBtn').onclick = async function() {
+          if (!confirm('Supprimer ce lien ?')) return;
+          const urlPart = '<%= shortUrl.split('/').pop() %>';
+          const response = await fetch(`/api-v2/${urlPart}`, {
+            method: 'DELETE',
+            headers: { 'X-API-Key': '<%= secret %>' }
+          });
+          if (response.ok) {
+            alert('Lien supprimé !');
+            window.location.href = '/';
+          } else {
+            const data = await response.json();
+            alert('Erreur : ' + (data.error || 'Suppression impossible'));
+          }
+        };
+      </script>
+    <% } %>
   <% } %>
 </body>
 </html>

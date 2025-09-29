@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const path = require('path');
 const yaml = require('js-yaml');
@@ -6,6 +7,8 @@ const fs = require('fs');
 
 const app = express();
 
+
+app.use(cors());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 

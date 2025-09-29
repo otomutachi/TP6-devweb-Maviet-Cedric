@@ -131,35 +131,10 @@ router.get('/:url', async (req, res) => {
 });
 
 router.delete('/:url', async (req, res) => {
-  const apiKey = req.headers['x-api-key'];
-  if (!apiKey) {
-    return res.status(401).send('Unauthorized');
-  }
-  try {
-    const row = await db.get('SELECT secret FROM links WHERE short = ?', [req.params.url]);
-    if (!row) {
-      return res.status(404).send('Not found');
-    }
-    if (row.secret !== apiKey) {
-      return res.status(403).send('Forbidden');
-    }
-    await db.run('DELETE FROM links WHERE short = ?', [req.params.url]);
-    res.status(200).send('Link successfully deleted');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
-
-module.exports = router;
-
-
-router.delete('/:url', async (req, res) => {
   const apiKey = req.get('X-API-Key');
   if (!apiKey) {
     return res.status(401).json({ error: 'Unauthorized: X-API-Key header is required' });
   }
-
   try {
     const row = await db.get('SELECT secret FROM links WHERE short = ?', [req.params.url]);
     if (!row) {
