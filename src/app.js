@@ -10,17 +10,19 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 
 app.use(express.static(path.join(__dirname, '../static')));
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse form data
 
 app.disable('x-powered-by');
 app.use((req, res, next) => {
-  res.setHeader('X-API-Version', '2.0.0');
+  res.setHeader('X-API-Version', '2.0.1'); // Updated to match OpenAPI version
   next();
 });
+
 app.get('/favicon.ico', (req, res) => {
   res.sendFile(path.join(__dirname, '../static/logo_univ_16.png'));
 });
 
-app.use(express.json());
 app.use('/api-v1', require('./routes/api-v1'));
 app.use('/api-v2', require('./routes/api-v2'));
 
