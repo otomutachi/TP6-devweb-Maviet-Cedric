@@ -98,6 +98,7 @@ router.get('/:url', (req, res) => {
         if (!row) {
           return res.status(404).json({ error: 'Not found' });
         }
+        // Ne pas révéler le secret
         const { secret, ...safeRow } = row;
         res.json(safeRow);
       } catch (err) {
