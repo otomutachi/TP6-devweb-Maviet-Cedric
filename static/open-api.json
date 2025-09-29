@@ -55,6 +55,16 @@
                   }
                 }
               }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },
