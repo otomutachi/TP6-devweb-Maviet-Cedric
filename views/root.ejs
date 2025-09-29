@@ -22,16 +22,22 @@
         document.getElementById('deleteBtn').onclick = async function() {
           if (!confirm('Supprimer ce lien ?')) return;
           const urlPart = '<%= shortUrl.split('/').pop() %>';
-          const response = await fetch(`/api-v2/${urlPart}`, {
-            method: 'DELETE',
-            headers: { 'X-API-Key': '<%= secret %>' }
-          });
-          if (response.ok) {
-            alert('Lien supprimé !');
-            window.location.href = '/';
-          } else {
-            const data = await response.json();
-            alert('Erreur : ' + (data.error || 'Suppression impossible'));
+          const apiBase = window.location.origin;
+          try {
+            const response = await fetch(`${apiBase}/api-v2/${urlPart}`, {
+              method: 'DELETE',
+              headers: { 'X-API-Key': '<%= secret %>' }
+            });
+            if (response.ok) {
+              alert('Lien supprimé !');
+              window.location.href = '/';
+            } else {
+              let data = {};
+              try { data = await response.json(); } catch(e) {}
+              alert('Erreur : ' + (data.error || 'Suppression impossible'));
+            }
+          } catch (err) {
+            alert('Erreur réseau : ' + err.message);
           }
         };
       </script>
