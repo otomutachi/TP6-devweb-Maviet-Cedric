@@ -4,7 +4,7 @@ const db = require('../utils/database');
 const { isValidUrl, generateShortUrl, generateSecret } = require('../utils/url');
 const config = require('../utils/config');
 
-const SHORT_URL_BASE = `http://localhost:8080`;
+const SHORT_URL_BASE = process.env.RENDER_EXTERNAL_URL || `http://localhost:8080`;
 
 async function generateUniqueShortUrl(length) {
   let attempts = 0;
