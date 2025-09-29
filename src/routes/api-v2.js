@@ -46,7 +46,7 @@ router.post('/', (req, res) => {
         if (!isUnique) {
           return res.status(500).json({ error: 'Could not generate unique short URL' });
         }
-        const createdAt = new Date().toISOString(); // e.g., "2025-09-29T00:45:00.000Z" adjusted for +11
+        const createdAt = new Date().toISOString(); 
         await db.run('INSERT INTO links (short, origin, created_at) VALUES (?, ?, ?)', [shortUrl, url, createdAt]);
         res.status(201).json({ short_url: `http://localhost:${config.PORT}/api-v2/${shortUrl}` });
       } catch (err) {
