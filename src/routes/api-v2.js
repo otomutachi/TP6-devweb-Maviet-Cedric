@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../utils/database');
-const { isValidUrl, generateShortUrl } = require('../utils/url');
+const { isValidUrl, generateShortUrl, generateSecret } = require('../utils/url');
 const config = require('../utils/config');
 
 router.get('/', (req, res) => {
@@ -46,8 +46,9 @@ router.post('/', (req, res) => {
         if (!isUnique) {
           return res.status(500).json({ error: 'Could not generate unique short URL' });
         }
-        const createdAt = new Date().toISOString(); 
-        await db.run('INSERT INTO links (short, origin, created_at) VALUES (?, ?, ?)', [shortUrl, url, createdAt]);
+        const createdAt = new Date().toISOString();
+        const secret = generateSecret();
+        await db.run('INSERT INTO links (short, origin, created_at, secret) VALUES (?, ?, ?, ?)', [shortUrl, url, createdAt, secret]);
         res.status(201).json({ short_url: `http://localhost:${config.PORT}/api-v2/${shortUrl}` });
       } catch (err) {
         console.error(err);
@@ -75,7 +76,8 @@ router.post('/', (req, res) => {
           return res.status(500).send('Could not generate unique short URL');
         }
         const createdAt = new Date().toISOString();
-        await db.run('INSERT INTO links (short, origin, created_at) VALUES (?, ?, ?)', [shortUrl, url, createdAt]);
+        const secret = generateSecret();
+        await db.run('INSERT INTO links (short, origin, created_at, secret) VALUES (?, ?, ?, ?)', [shortUrl, url, createdAt, secret]);
         res.render('root', { page: 'created', shortUrl: shortUrl, port: config.PORT });
       } catch (err) {
         console.error(err);
@@ -96,11 +98,8 @@ router.get('/:url', (req, res) => {
         if (!row) {
           return res.status(404).json({ error: 'Not found' });
         }
-        res.json({
-          created_at: row.created_at,
-          origin: row.origin,
-          visits: row.visits
-        });
+        const { secret, ...safeRow } = row;
+        res.json(safeRow);
       } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
@@ -123,6 +122,28 @@ router.get('/:url', (req, res) => {
       res.status(406).send('Not Acceptable');
     }
   });
+});
+
+router.delete('/:url', async (req, res) => {
+  const apiKey = req.get('X-API-Key');
+  if (!apiKey) {
+    return res.status(401).json({ error: 'Unauthorized: X-API-Key header is required' });
+  }
+
+  try {
+    const row = await db.get('SELECT secret FROM links WHERE short = ?', [req.params.url]);
+    if (!row) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    if (row.secret !== apiKey) {
+      return res.status(403).json({ error: 'Forbidden: Invalid X-API-Key' });
+    }
+    await db.run('DELETE FROM links WHERE short = ?', [req.params.url]);
+    res.status(200).json({ message: 'Link deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 module.exports = router;
