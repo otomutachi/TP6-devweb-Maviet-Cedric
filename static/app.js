@@ -1,4 +1,4 @@
-const originURL = "http://localhost:8080/";
+const originURL = "https://tp6-devweb-maviet-cedric.onrender.com";
 
 document.getElementById('submit-link').addEventListener('submit', async (e) => {
   e.preventDefault();
