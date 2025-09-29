@@ -65,8 +65,9 @@ router.post('/', async (req, res) => {
   res.format({
     'application/json': async () => {
       try {
-        const shortLink = await createShortUrl(url);
-        res.status(201).json({ short_url: shortLink });
+        const shortUrl = await createShortUrl(url);
+        const row = await db.get('SELECT short, secret FROM links WHERE origin = ?', [shortUrl.replace(`${SHORT_URL_BASE}/`, '')]);
+        res.status(201).json({ short_url: shortUrl, secret: row ? row.secret : undefined });
       } catch (err) {
         console.error(err);
         if (err.message === 'Invalid URL') {
@@ -77,8 +78,9 @@ router.post('/', async (req, res) => {
     },
     'text/html': async () => {
       try {
-        const shortLink = await createShortUrl(url);
-        res.render('root', { page: 'created', shortUrl: shortLink, port: config.PORT });
+        const shortUrl = await createShortUrl(url);
+        const row = await db.get('SELECT short, secret FROM links WHERE short = ?', [shortUrl.split('/').pop()]);
+        res.render('root', { page: 'created', shortUrl: shortUrl, port: config.PORT, secret: row ? row.secret : undefined });
       } catch (err) {
         console.error(err);
         if (err.message === 'Invalid URL') {
