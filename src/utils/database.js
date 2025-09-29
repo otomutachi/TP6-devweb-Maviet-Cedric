@@ -19,9 +19,9 @@ class Database {
     const schema = fs.readFileSync(config.DB_SCHEMA, 'utf8');
     this.db.exec(schema, (err) => {
       if (err) {
-        console.error('Error initializing database:', err);
+        console.error('initialisation de la base de donnée a echouer:', err);
       } else if (config.LOG_LEVEL === 'debug') {
-        console.log('Database initialized');
+        console.log('initialisation de la base de donnée');
       }
     });
   }
