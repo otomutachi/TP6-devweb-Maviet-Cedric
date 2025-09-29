@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { url } = req.body;
   if (!url || !isValidUrl(url)) {
-    return res.status(400).json({ error: 'Invalid URL' });
+    return res.status(400).json({ error: 'lien invalide' });
   }
   try {
     let shortUrl;
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
       }
     }
     if (!isUnique) {
-      return res.status(500).json({ error: 'Could not generate unique short URL' });
+      return res.status(500).json({ error: 'genere pas de lien url' });
     }
     const createdAt = new Date().toISOString();
     await db.run('INSERT INTO links (short, origin, created_at) VALUES (?, ?, ?)', [shortUrl, url, createdAt]);
@@ -51,7 +51,7 @@ router.get('/:url', async (req, res) => {
   try {
     const row = await db.get('SELECT origin, visits FROM links WHERE short = ?', [req.params.url]);
     if (!row) {
-      return res.status(404).json({ error: 'Not found' });
+      return res.status(404).json({ error: 'pas trouver' });
     }
     await db.run('UPDATE links SET visits = ? WHERE short = ?', [row.visits + 1, req.params.url]);
     res.redirect(row.origin);
@@ -65,7 +65,7 @@ router.get('/status/:url', async (req, res) => {
   try {
     const row = await db.get('SELECT created_at, origin, visits FROM links WHERE short = ?', [req.params.url]);
     if (!row) {
-      return res.status(404).json({ error: 'Not found' });
+      return res.status(404).json({ error: 'pas trouver' });
     }
     res.json({
       created_at: row.created_at,
