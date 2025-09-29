@@ -29,4 +29,20 @@ app.use('/api-v2', require('./routes/api-v2'));
 const swaggerDocument = yaml.load(fs.readFileSync(path.join(__dirname, '../static/open-api.yaml'), 'utf8'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
+const db = require('./utils/database');
+app.get('/:short', async (req, res) => {
+  try {
+    const row = await db.get('SELECT origin, visits FROM links WHERE short = ?', [req.params.short]);
+    if (!row) {
+      return res.status(404).send('Short URL not found');
+    }
+    await db.run('UPDATE links SET visits = visits + 1 WHERE short = ?', [req.params.short]);
+    res.redirect(302, row.origin);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
 module.exports = app;
