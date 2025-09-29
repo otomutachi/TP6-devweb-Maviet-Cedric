@@ -4,7 +4,37 @@ const db = require('../utils/database');
 const { isValidUrl, generateShortUrl, generateSecret } = require('../utils/url');
 const config = require('../utils/config');
 
-router.get('/', (req, res) => {
+const SHORT_URL_BASE = `http://localhost:8081`;
+
+async function generateUniqueShortUrl(length) {
+  let attempts = 0;
+  const maxAttempts = 100; 
+  while (attempts < maxAttempts) {
+    const shortUrl = generateShortUrl(length);
+    const existing = await db.get('SELECT short FROM links WHERE short = ?', [shortUrl]);
+    if (!existing) {
+      return shortUrl;
+    }
+    attempts++;
+  }
+  throw new Error('Could not generate unique short URL after multiple attempts');
+}
+
+async function createShortUrl(originalUrl) {
+  if (!originalUrl || !isValidUrl(originalUrl)) {
+    throw new Error('Invalid URL');
+  }
+  const shortUrl = await generateUniqueShortUrl(config.LINK_LEN);
+  const createdAt = new Date().toISOString();
+  const secret = generateSecret();
+  await db.run(
+    'INSERT INTO links (short, origin, created_at, secret) VALUES (?, ?, ?, ?)',
+    [shortUrl, originalUrl, createdAt, secret]
+  );
+  return `${SHORT_URL_BASE}/${shortUrl}`;
+}
+
+router.get('/', async (req, res) => {
   res.format({
     'application/json': async () => {
       try {
@@ -24,61 +54,65 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
+  const { url } = req.body;
   res.format({
     'application/json': async () => {
-      const { url } = req.body;
-      if (!url || !isValidUrl(url)) {
-        return res.status(400).json({ error: 'Invalid URL' });
-      }
       try {
-        let shortUrl;
-        let isUnique = false;
-        const maxAttempts = 5;
-        for (let i = 0; i < maxAttempts; i++) {
-          shortUrl = generateShortUrl(config.LINK_LEN);
-          const existing = await db.get('SELECT short FROM links WHERE short = ?', [shortUrl]);
-          if (!existing) {
-            isUnique = true;
-            break;
-          }
+        const shortLink = await createShortUrl(url);
+        res.status(201).json({ short_url: shortLink });
+      } catch (err) {
+        console.error(err);
+        if (err.message === 'Invalid URL') {
+          return res.status(400).json({ error: 'Invalid URL' });
         }
-        if (!isUnique) {
-          return res.status(500).json({ error: 'Could not generate unique short URL' });
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    },
+    'text/html': async () => {
+      try {
+        const shortLink = await createShortUrl(url);
+        res.render('root', { page: 'created', shortUrl: shortLink, port: config.PORT });
+      } catch (err) {
+        console.error(err);
+        if (err.message === 'Invalid URL') {
+          return res.status(400).send('Invalid URL');
         }
-        const createdAt = new Date().toISOString();
-        const secret = generateSecret();
-        await db.run('INSERT INTO links (short, origin, created_at, secret) VALUES (?, ?, ?, ?)', [shortUrl, url, createdAt, secret]);
-        res.status(201).json({ short_url: `http://localhost:${config.PORT}/api-v2/${shortUrl}` });
+        res.status(500).send('Internal server error');
+      }
+    },
+    default: () => {
+      res.status(406).send('Not Acceptable');
+    }
+  });
+});
+
+router.get('/:url', async (req, res) => {
+  res.format({
+    'application/json': async () => {
+      try {
+        const row = await db.get('SELECT created_at, origin, visits FROM links WHERE short = ?', [req.params.url]);
+        if (!row) {
+          return res.status(404).json({ error: 'Not found' });
+        }
+        res.json({
+          created_at: row.created_at,
+          origin: row.origin,
+          visits: row.visits
+        });
       } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
       }
     },
     'text/html': async () => {
-      const { url } = req.body;
-      if (!url || !isValidUrl(url)) {
-        return res.status(400).send('Invalid URL');
-      }
       try {
-        let shortUrl;
-        let isUnique = false;
-        const maxAttempts = 5;
-        for (let i = 0; i < maxAttempts; i++) {
-          shortUrl = generateShortUrl(config.LINK_LEN);
-          const existing = await db.get('SELECT short FROM links WHERE short = ?', [shortUrl]);
-          if (!existing) {
-            isUnique = true;
-            break;
-          }
+        const row = await db.get('SELECT origin, visits FROM links WHERE short = ?', [req.params.url]);
+        if (!row) {
+          return res.status(404).send('Not found');
         }
-        if (!isUnique) {
-          return res.status(500).send('Could not generate unique short URL');
-        }
-        const createdAt = new Date().toISOString();
-        const secret = generateSecret();
-        await db.run('INSERT INTO links (short, origin, created_at, secret) VALUES (?, ?, ?, ?)', [shortUrl, url, createdAt, secret]);
-        res.render('root', { page: 'created', shortUrl: shortUrl, port: config.PORT });
+        await db.run('UPDATE links SET visits = visits + 1 WHERE short = ?', [req.params.url]);
+        res.redirect(302, row.origin);
       } catch (err) {
         console.error(err);
         res.status(500).send('Internal server error');
@@ -89,6 +123,29 @@ router.post('/', (req, res) => {
     }
   });
 });
+
+router.delete('/:url', async (req, res) => {
+  const apiKey = req.headers['x-api-key'];
+  if (!apiKey) {
+    return res.status(401).send('Unauthorized');
+  }
+  try {
+    const row = await db.get('SELECT secret FROM links WHERE short = ?', [req.params.url]);
+    if (!row) {
+      return res.status(404).send('Not found');
+    }
+    if (row.secret !== apiKey) {
+      return res.status(403).send('Forbidden');
+    }
+    await db.run('DELETE FROM links WHERE short = ?', [req.params.url]);
+    res.status(200).send('Link successfully deleted');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+module.exports = router;
 
 router.get('/:url', (req, res) => {
   res.format({
