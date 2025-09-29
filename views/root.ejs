@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Shortener</title>
+</head>
+<body>
+  <% if (page === 'home') { %>
+    <h1>URL Shortener</h1>
+    <form method="post" action="/api-v2/" id="submit-link">
+      <label for="url">Type the URL to shorten</label>
+      <input name="url" id="url" type="url" placeholder="https://perdu.com" required />
+      <button type="submit">Submit</button>
+    </form>
+  <% } else if (page === 'created') { %>
+    <h1>Shortened URL Created</h1>
+    <p>Your shortened URL: <a href="http://localhost:<%= port %>/api-v2/<%= shortUrl %>">http://localhost:<%= port %>/api-v2/<%= shortUrl %></a></p>
+  <% } %>
+</body>
+</html>
