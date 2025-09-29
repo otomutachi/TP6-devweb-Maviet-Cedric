@@ -10,12 +10,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 
 app.use(express.static(path.join(__dirname, '../static')));
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse form data
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
 
 app.disable('x-powered-by');
 app.use((req, res, next) => {
-  res.setHeader('X-API-Version', '2.0.1'); // Updated to match OpenAPI version
+  res.setHeader('X-API-Version', '2.0.1'); 
   next();
 });
 
