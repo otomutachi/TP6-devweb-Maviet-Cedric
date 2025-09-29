@@ -1,4 +1,4 @@
-const originURL = "http://localhost:8080/"; // Adjust if using another server (e.g., "http://127.0.0.1:8080/")
+const originURL = "http://localhost:8080/"; 
 
 document.getElementById('submit-link').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -33,7 +33,7 @@ document.getElementById('submit-link').addEventListener('submit', async (e) => {
       navigator.clipboard.writeText(data.short_url).then(() => {
         alert('URL copied to clipboard!');
       }).catch(err => {
-        console.error('Failed to copy: ', err);
+        console.error('la copie n as pas etait effectuer: ', err);
       });
     };
   } catch (err) {
