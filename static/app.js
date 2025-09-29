@@ -1,4 +1,4 @@
-const originURL = "http://localhost:8080/"; 
+const originURL = "http://localhost:8080/";
 
 document.getElementById('submit-link').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -13,17 +13,20 @@ document.getElementById('submit-link').addEventListener('submit', async (e) => {
   shortUrlPara.textContent = '';
 
   try {
+    const formData = new FormData();
+    formData.append('url', url);
+
     const response = await fetch(`${originURL}api-v2/`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({ url })
+      body: formData
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
@@ -33,7 +36,7 @@ document.getElementById('submit-link').addEventListener('submit', async (e) => {
       navigator.clipboard.writeText(data.short_url).then(() => {
         alert('URL copied to clipboard!');
       }).catch(err => {
-        console.error('la copie n as pas etait effectuer: ', err);
+        console.error('Failed to copy URL: ', err);
       });
     };
   } catch (err) {

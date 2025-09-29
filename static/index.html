@@ -2,28 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>dev web - url short</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    #result { margin-top: 20px; }
-    .hidden { display: none; }
-    .error { color: red; }
-    .success { color: green; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL short</title>
 </head>
 <body>
-  <h1>dev web URL Short</h1>
-  <form id="submit-link">
-    <label for="url">le type de l'url</label>
-    <input name="url" id="url" type="url" placeholder="https://perdu.com" required />
-    <button type="submit">Submit</button>
+  <h1>URL short</h1>
+  <form id="submit-link" method="POST" action="/api-v2/">
+    <input type="text" id="url" name="url" placeholder="Enter URL to shorten" required>
+    <input type="submit" value="Submit">
   </form>
   <div id="result" class="hidden">
     <p id="shortUrl"></p>
+    <p id="error"></p>
     <button id="copyButton">Copy URL</button>
-    <p id="error" class="error"></p>
   </div>
-
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>
