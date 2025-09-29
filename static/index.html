@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Shortener - AJAX Client</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #result { margin-top: 20px; }
+    .hidden { display: none; }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>URL Shortener</h1>
+  <form id="submit-link">
+    <label for="url">Type the URL to shorten</label>
+    <input name="url" id="url" type="url" placeholder="https://perdu.com" required />
+    <button type="submit">Submit</button>
+  </form>
+  <div id="result" class="hidden">
+    <p id="shortUrl"></p>
+    <button id="copyButton">Copy URL</button>
+    <p id="error" class="error"></p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
