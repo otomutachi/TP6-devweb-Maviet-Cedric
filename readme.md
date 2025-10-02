@@ -1,16 +1,10 @@
 # TP6 - Réducteur d’URL en Node.js/Express
 
+**Démo en ligne : [https://tp6-devweb-maviet-cedric.onrender.com](https://tp6-devweb-maviet-cedric.onrender.com)**
+
 ## Présentation
 Ce projet est un service de réduction d’URL, similaire à bit.ly ou tinyurl.com. Il permet de transformer une URL longue en une URL courte, qui redirige vers l’URL d’origine. Le projet inclut une API REST, un client HTML et une interface AJAX.
 
-## Fonctionnalités
-- Création d’URL courte via API (POST)
-- Redirection automatique vers l’URL d’origine (GET)
-- Compteur de visites pour chaque lien
-- Suppression sécurisée d’un lien via clé secrète (DELETE)
-- Négociation de contenu (JSON/HTML)
-- Documentation interactive via Swagger UI
-- Client AJAX avec copie et suppression du lien
 
 ## Installation
 1. Cloner le dépôt :
@@ -34,10 +28,6 @@ Ce projet est un service de réduction d’URL, similaire à bit.ly ou tinyurl.c
    - Développement : `npm run dev`
    - Production : `npm run prod`
 
-## Utilisation
-- Swagger UI : [https://tp6-devweb-maviet-cedric.onrender.com/api-docs](https://tp6-devweb-maviet-cedric.onrender.com/api-docs)
-- Client HTML : [https://tp6-devweb-maviet-cedric.onrender.com/](https://tp6-devweb-maviet-cedric.onrender.com/)
-- Redirection : Accéder à l’URL courte générée, ex : `https://tp6-devweb-maviet-cedric.onrender.com/AbCdEf`
 
 ## API
 ### Routes principales
