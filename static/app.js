@@ -1,5 +1,58 @@
 const originURL = "https://tp6-devweb-maviet-cedric.onrender.com/";
 
+let lastShortUrl = null;
+let lastSecret = null;
+
+function showResult(shortUrl, secret) {
+  const resultDiv = document.getElementById('result');
+  const shortUrlPara = document.getElementById('shortUrl');
+  const errorPara = document.getElementById('error');
+  const copyButton = document.getElementById('copyButton');
+
+  shortUrlPara.innerHTML = `Shortened URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+  resultDiv.classList.remove('hidden');
+  errorPara.textContent = '';
+  lastShortUrl = shortUrl;
+  lastSecret = secret;
+
+  copyButton.onclick = () => {
+    navigator.clipboard.writeText(shortUrl).then(() => {
+      alert('URL copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy URL: ', err);
+    });
+  };
+
+  let deleteBtn = document.getElementById('deleteButton');
+  if (deleteBtn) deleteBtn.remove();
+  if (secret) {
+    deleteBtn = document.createElement('button');
+    deleteBtn.id = 'deleteButton';
+    deleteBtn.textContent = 'Supprimer ce lien';
+    deleteBtn.onclick = async () => {
+      if (!confirm('Supprimer ce lien ?')) return;
+      const urlPart = shortUrl.split('/').pop();
+      try {
+        const response = await fetch(`${originURL}api-v2/${urlPart}`, {
+          method: 'DELETE',
+          headers: { 'X-API-Key': secret }
+        });
+        if (response.ok) {
+          alert('Lien supprimé !');
+          resultDiv.classList.add('hidden');
+        } else {
+          let data = {};
+          try { data = await response.json(); } catch(e) {}
+          alert('Erreur : ' + (data.error || 'Suppression impossible'));
+        }
+      } catch (err) {
+        alert('Erreur réseau : ' + err.message);
+      }
+    };
+    resultDiv.appendChild(deleteBtn);
+  }
+}
+
 document.getElementById('submit-link').addEventListener('submit', async (e) => {
   e.preventDefault();
   const url = document.getElementById('url').value;
@@ -31,15 +84,7 @@ document.getElementById('submit-link').addEventListener('submit', async (e) => {
     }
 
     const data = await response.json();
-    shortUrlPara.textContent = `Shortened URL: ${data.short_url}`;
-    resultDiv.classList.remove('hidden');
-    copyButton.onclick = () => {
-      navigator.clipboard.writeText(data.short_url).then(() => {
-        alert('URL copied to clipboard!');
-      }).catch(err => {
-        console.error('Failed to copy URL: ', err);
-      });
-    };
+    showResult(data.short_url, data.secret);
   } catch (err) {
     errorPara.textContent = `Error: ${err.message}`;
     resultDiv.classList.remove('hidden');
