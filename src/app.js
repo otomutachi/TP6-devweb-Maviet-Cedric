@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const app = express();
 
-const originURL = "https://tp6-devweb-maviet-cedric.onrender.com/";
+
 
 app.use(cors());
 app.set('view engine', 'ejs');
