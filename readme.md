@@ -36,15 +36,6 @@ Ce projet est un service de réduction d’URL, similaire à bit.ly ou tinyurl.c
 - `GET /api-v2/:url` : Infos sur le lien (JSON) ou redirection (HTML)
 - `DELETE /api-v2/:url` : Suppression sécurisée (clé secrète dans X-API-Key)
 
-### Exemple de requêtes
-```sh
-# Créer un lien
-http POST https://tp6-devweb-maviet-cedric.onrender.com/api-v2/ url="https://perdu.com"
-
-# Supprimer un lien
-http DELETE https://tp6-devweb-maviet-cedric.onrender.com/api-v2/AbCdEf X-API-Key:secret123
-```
-
 ## Structure du projet
 ```
 src/
@@ -69,9 +60,7 @@ database/
   database.sqlite  # Base SQLite
 ```
 
-## Sécurité
-- La suppression d’un lien nécessite la clé secrète générée à la création.
-- La clé doit être fournie dans l’en-tête `X-API-Key` lors de la requête DELETE.
+
 
 ## Documentation
 - Swagger UI : [https://tp6-devweb-maviet-cedric.onrender.com/api-docs](https://tp6-devweb-maviet-cedric.onrender.com/api-docs)
