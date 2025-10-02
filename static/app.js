@@ -78,8 +78,9 @@ document.getElementById('submit-link').addEventListener('submit', async (e) => {
       throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    showResult(data.short_url, data.secret);
+  const data = await response.json();
+  console.log('API response:', data);
+  showResult(data.short_url, data.secret);
   } catch (err) {
     errorPara.textContent = `Error: ${err.message}`;
     resultDiv.classList.remove('hidden');
