@@ -4,18 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>URL Shortener</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <h1>URL Shortener</h1>
-  <form id="submit-link" method="POST" action="/api-v2/">
-    <input type="text" id="url" name="url" placeholder="Enter URL to shorten (e.g., https://perdu.com)" required>
-    <input type="submit" value="Submit">
-  </form>
-  <div id="result" class="hidden">
-    <p id="shortUrl"></p>
-    <p id="error"></p>
-    <button id="copyButton">Copy URL</button>
-    <button id="deleteButton" style="display:none">Supprimer ce lien</button>
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100vw;">
+    <form id="submit-link" method="POST" action="/api-v2/">
+      <input type="text" id="url" name="url" placeholder="Enter URL to shorten (e.g., https://perdu.com)" required>
+      <input type="submit" value="Submit">
+    </form>
+    <div id="result" class="hidden">
+      <p id="shortUrl"></p>
+      <p id="error"></p>
+      <button id="copyButton">Copy URL</button>
+      <button id="deleteButton" style="display:none">Supprimer ce lien</button>
+    </div>
   </div>
   <script src="/app.js"></script>
 </body>

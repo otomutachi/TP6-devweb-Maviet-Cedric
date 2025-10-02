@@ -66,7 +66,8 @@ router.post('/', async (req, res) => {
     'application/json': async () => {
       try {
         const shortUrl = await createShortUrl(url);
-        const row = await db.get('SELECT short, secret FROM links WHERE origin = ?', [shortUrl.replace(`${SHORT_URL_BASE}/`, '')]);
+        const shortCode = shortUrl.split('/').pop();
+        const row = await db.get('SELECT short, secret FROM links WHERE short = ?', [shortCode]);
         res.status(201).json({ short_url: shortUrl, secret: row ? row.secret : undefined });
       } catch (err) {
         console.error(err);
