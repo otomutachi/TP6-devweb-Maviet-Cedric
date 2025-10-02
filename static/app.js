@@ -8,6 +8,7 @@ function showResult(shortUrl, secret) {
   const shortUrlPara = document.getElementById('shortUrl');
   const errorPara = document.getElementById('error');
   const copyButton = document.getElementById('copyButton');
+  const deleteBtn = document.getElementById('deleteButton');
 
   shortUrlPara.innerHTML = `Shortened URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
   resultDiv.classList.remove('hidden');
@@ -23,12 +24,8 @@ function showResult(shortUrl, secret) {
     });
   };
 
-  let deleteBtn = document.getElementById('deleteButton');
-  if (deleteBtn) deleteBtn.remove();
   if (secret) {
-    deleteBtn = document.createElement('button');
-    deleteBtn.id = 'deleteButton';
-    deleteBtn.textContent = 'Supprimer ce lien';
+    deleteBtn.style.display = '';
     deleteBtn.onclick = async () => {
       if (!confirm('Supprimer ce lien ?')) return;
       const urlPart = shortUrl.split('/').pop();
@@ -49,7 +46,9 @@ function showResult(shortUrl, secret) {
         alert('Erreur réseau : ' + err.message);
       }
     };
-    resultDiv.appendChild(deleteBtn);
+  } else {
+    deleteBtn.style.display = 'none';
+    deleteBtn.onclick = null;
   }
 }
 
