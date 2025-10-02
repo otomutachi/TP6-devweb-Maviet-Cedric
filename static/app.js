@@ -3,7 +3,7 @@ const originURL = "https://tp6-devweb-maviet-cedric.onrender.com/";
 let lastShortUrl = null;
 let lastSecret = null;
 
-function showResult(shortUrl, secret) {
+function showResult(shortUrl, secret) { 
   const resultDiv = document.getElementById('result');
   const shortUrlPara = document.getElementById('shortUrl');
   const errorPara = document.getElementById('error');
@@ -26,26 +26,26 @@ function showResult(shortUrl, secret) {
 
   if (secret) {
     deleteBtn.style.display = '';
-    deleteBtn.onclick = async () => {
-      if (!confirm('Supprimer ce lien ?')) return;
-      const urlPart = shortUrl.split('/').pop();
-      try {
-        const response = await fetch(`${originURL}api-v2/${urlPart}`, {
-          method: 'DELETE',
-          headers: { 'X-API-Key': secret }
-        });
-        if (response.ok) {
-          alert('Lien supprimé !');
-          resultDiv.classList.add('hidden');
-        } else {
-          let data = {};
-          try { data = await response.json(); } catch(e) {}
-          alert('Erreur : ' + (data.error || 'Suppression impossible'));
-        }
-      } catch (err) {
-        alert('Erreur réseau : ' + err.message);
-      }
-    };
+    deleteBtn.onclick = async () => { 
+      if (!confirm('Supprimer ce lien ?')) return; 
+      const urlPart = shortUrl.split('/').pop(); 
+      try { 
+        const response = await fetch(`/api-v2/${urlPart}`, { 
+          method: 'DELETE', 
+          headers: { 'X-API-Key': secret } 
+        }); 
+        if (response.ok) { 
+          alert('Lien supprimé !'); 
+          resultDiv.classList.add('hidden'); 
+        } else { 
+          let data = {}; 
+          try { data = await response.json(); } catch(e) {} 
+          alert('Erreur : ' + (data.error || 'Suppression impossible')); 
+        } 
+      } catch (err) { 
+        alert('Erreur réseau : ' + err.message); 
+      } 
+    }; 
   } else {
     deleteBtn.style.display = 'none';
     deleteBtn.onclick = null;
@@ -68,7 +68,7 @@ document.getElementById('submit-link').addEventListener('submit', async (e) => {
     const params = new URLSearchParams();
     params.append('url', url);
 
-    const response = await fetch(`${originURL}api-v2/`, {
+    const response = await fetch(`/api-v2/`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
