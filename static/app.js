@@ -13,15 +13,16 @@ document.getElementById('submit-link').addEventListener('submit', async (e) => {
   shortUrlPara.textContent = '';
 
   try {
-    const formData = new FormData();
-    formData.append('url', url);
+    const params = new URLSearchParams();
+    params.append('url', url);
 
     const response = await fetch(`${originURL}api-v2/`, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: formData
+      body: params
     });
 
     if (!response.ok) {
