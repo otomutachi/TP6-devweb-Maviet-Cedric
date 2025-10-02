@@ -38,29 +38,29 @@ Ce projet est un service de réduction d’URL, similaire à bit.ly ou tinyurl.c
 
 ## Structure du projet
 ```
-src/
-  app.js           # Configuration Express
-  server.js        # Lancement du serveur principal
-  routes/
-    api-v1.js      # API v1
-    api-v2.js      # API v2 (négociation de contenu, suppression)
-  utils/
-    config.js      # Configuration centralisée
-    database.js    # Accès base SQLite
-    url.js         # Génération des liens et secrets
-static/
-  index.html       # Client AJAX
-  app.js           # JS du client AJAX
-  logo_univ_16.png # Favicon
-  open-api.yaml    # Spécification OpenAPI
-views/
-  root.ejs         # Template EJS pour rendu HTML
-database/
-  database.sql     # Schéma de la base
-  database.sqlite  # Base SQLite
+TP6-devweb-Maviet-Cedric
+├── src
+│   ├── app.js           # Configuration Express
+│   ├── server.js        # Lancement du serveur principal
+│   ├── routes
+│   │   ├── api-v1.js    # API v1
+│   │   └── api-v2.js    # API v2 (négociation de contenu, suppression)
+│   └── utils
+│       ├── config.js    # Configuration centralisée
+│       ├── database.js  # Accès base SQLite
+│       └── url.js       # Génération des liens et secrets
+├── static
+│   ├── index.html       # Client AJAX
+│   ├── app.js           # JS du client AJAX
+│   ├── logo_univ_16.png # Favicon
+│   ├── open-api.yaml    # Spécification OpenAPI
+│   └── style.css        # Feuille de style CSS
+├── views
+│   └── root.ejs         # Template EJS pour rendu HTML
+├── database
+│   ├── database.sql     # Schéma de la base
+│   └── database.sqlite  # Base SQLite
 ```
-
-
 
 ## Documentation
 - Swagger UI : [https://tp6-devweb-maviet-cedric.onrender.com/api-docs](https://tp6-devweb-maviet-cedric.onrender.com/api-docs)
